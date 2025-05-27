@@ -2,7 +2,7 @@ pipeline {
     agent {
         kubernetes {
             label 'jenkins-agent-my-app'
-            yaml '''
+            yaml """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -15,7 +15,7 @@ spec:
       command:
         - cat
       tty: true
-'''
+"""
         }
     }
 
