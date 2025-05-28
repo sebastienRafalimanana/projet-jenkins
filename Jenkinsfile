@@ -47,8 +47,8 @@ spec:
   stage('Build image') {
     steps {
       container('docker') {
-        sh 'docker build -t localhost:4000/pythontest:latest .'
-        sh 'docker push localhost:4000/pythontest:latest'
+        sh 'docker build -t localhost:4000/flask_hello:latest .'
+        sh 'docker push localhost:4000/flask_hello:latest'
       }
     }
   }
