@@ -78,12 +78,41 @@ spec:
       }
     }
 
+    stage('Check files') {
+      steps {
+        container('tools') {
+          sh 'ls -la'
+          sh 'find . -name "*.yaml" -o -name "*.yml"'
+        }
+      }
+    }
+
     stage('Deploy') {
       steps {
         container('tools') {
           sh 'kubectl version --client=true'
-          sh 'kubectl apply -f ./kubernetes/deployment.yaml'
-          sh 'kubectl apply -f ./kubernetes/service.yaml'
+          script {
+            // Vérifier si les fichiers existent avant de les appliquer
+            if (fileExists('./kubernetes/deployment.yaml')) {
+              sh 'kubectl apply -f ./kubernetes/deployment.yaml'
+            } else if (fileExists('./k8s/deployment.yaml')) {
+              sh 'kubectl apply -f ./k8s/deployment.yaml'
+            } else if (fileExists('./deployment.yaml')) {
+              sh 'kubectl apply -f ./deployment.yaml'
+            } else {
+              error 'Fichier deployment.yaml non trouvé'
+            }
+            
+            if (fileExists('./kubernetes/service.yaml')) {
+              sh 'kubectl apply -f ./kubernetes/service.yaml'
+            } else if (fileExists('./k8s/service.yaml')) {
+              sh 'kubectl apply -f ./k8s/service.yaml'
+            } else if (fileExists('./service.yaml')) {
+              sh 'kubectl apply -f ./service.yaml'
+            } else {
+              error 'Fichier service.yaml non trouvé'
+            }
+          }
         }
       }
     }
