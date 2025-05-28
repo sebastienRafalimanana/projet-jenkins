@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       label 'jenkins-agent-my-app'
-      yaml '''
+      yaml """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -10,24 +10,22 @@ metadata:
     component: ci
 spec:
   containers:
-    - name: python
-      image: python:3.10.12
-      command:
-        - cat
-      tty: true
-    - name: docker
-      image: docker:24.0.6
-      command:
-        - cat
-      tty: true
-      volumeMounts:
-        - name: docker-sock
-          mountPath: /var/run/docker.sock
-  volumes:
+  - name: python
+    image: python:3.10.12
+    command: ['cat']
+    tty: true
+  - name: docker
+    image: docker:24.0.6
+    command: ['cat']
+    tty: true
+    volumeMounts:
     - name: docker-sock
-      hostPath:
-        path: /var/run/docker.sock
-'''
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
+"""
     }
   }
 
