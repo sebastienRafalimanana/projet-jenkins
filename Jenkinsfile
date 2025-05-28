@@ -21,10 +21,12 @@ spec:
     volumeMounts:
     - name: docker-sock
       mountPath: /var/run/docker.sock
+
   - name: kubectl
-    image: bitnami/kubectl:1.30.0
+    image: bitnami/kubectl:1.30.0-debian-11-r0
     command: ['cat']
     tty: true
+
   volumes:
   - name: docker-sock
     hostPath:
@@ -70,6 +72,8 @@ spec:
     stage('Deploy') {
       steps {
         container('kubectl') {
+          sh 'which kubectl'
+          sh 'kubectl version --client=true'
           sh 'kubectl apply -f ./kubernetes/deployment.yaml'
           sh 'kubectl apply -f ./kubernetes/service.yaml'
         }
