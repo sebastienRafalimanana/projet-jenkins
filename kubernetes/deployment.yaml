@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask_hello
+  name: flask-hello    # flask_hello → flask-hello
   labels:
-    app: flask_hello
+    app: flask-hello   # flask_hello → flask-hello
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flask_hello
+      app: flask-hello # flask_hello → flask-hello
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: flask_hello
+        app: flask-hello # flask_hello → flask-hello
     spec:
       containers:
-        - name: flask_hello
+        - name: flask-hello # flask_hello → flask-hello
           image: localhost:4000/flask_hello:latest
           ports:
             - containerPort: 5000
