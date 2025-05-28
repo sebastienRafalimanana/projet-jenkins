@@ -21,9 +21,9 @@ spec:
     volumeMounts:
     - name: docker-sock
       mountPath: /var/run/docker.sock
-  - name: kubectl
-    image: bitnami/kubectl:1.30.0
-    command: ['sh', '-c', 'sleep infinity']
+  - name: tools
+    image: ubuntu:22.04
+    command: ['cat']
     tty: true
   volumes:
   - name: docker-sock
@@ -32,10 +32,6 @@ spec:
 """
     }
   }
-
-  // triggers {
-  //   pollSCM('* * * * *')
-  // }
 
   stages {
     stage('Test python') {
@@ -68,10 +64,23 @@ spec:
       }
     }
 
+    stage('Install kubectl') {
+      steps {
+        container('tools') {
+          sh '''
+            apt-get update -qq
+            apt-get install -y curl
+            curl -LO "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            mv kubectl /usr/local/bin/
+          '''
+        }
+      }
+    }
+
     stage('Deploy') {
       steps {
-        container('kubectl') {
-          sh 'which kubectl'
+        container('tools') {
           sh 'kubectl version --client=true'
           sh 'kubectl apply -f ./kubernetes/deployment.yaml'
           sh 'kubectl apply -f ./kubernetes/service.yaml'
