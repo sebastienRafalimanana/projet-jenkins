@@ -21,12 +21,10 @@ spec:
     volumeMounts:
     - name: docker-sock
       mountPath: /var/run/docker.sock
-
   - name: kubectl
-    image: lachlanevenson/k8s-kubectl:v1.30.0
+    image: bitnami/kubectl:1.30.0
     command: ['sh', '-c', 'sleep infinity']
     tty: true
-
   volumes:
   - name: docker-sock
     hostPath:
@@ -69,6 +67,7 @@ spec:
         }
       }
     }
+
     stage('Deploy') {
       steps {
         container('kubectl') {
