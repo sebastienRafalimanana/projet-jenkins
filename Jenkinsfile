@@ -1,6 +1,6 @@
 pipeline {
-    agent {
-        kubernetes {
+  agent {
+    kubernetes {
       label 'jenkins-agent-my-app'
       yaml '''
 apiVersion: v1
@@ -23,32 +23,35 @@ spec:
       volumeMounts:
         - name: docker-sock
           mountPath: /var/run/docker.sock
-    volumes:
-      - name: docker-sock
-        hostPath:
-          path: /var/run/docker.sock
+  volumes:
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
 '''
-        }
     }
-    triggers {
-      pollSCM('* * * * *')
+  }
+
+  triggers {
+    pollSCM('* * * * *')
+  }
+
+  stages {
+    stage('Test python') {
+      steps {
+        container('python') {
+          sh 'pip install -r requirements.txt'
+          sh 'python test.py'
+        }
+      }
     }
-    stages {
-        stage('Test python') {
-        steps {
-          container('python') {
-            sh 'pip install -r requirements.txt'
-            sh 'python test.py'
-          }
-        }
-        }
-      stage('Build image') {
+
+    stage('Build image') {
       steps {
         container('docker') {
           sh 'docker build -t localhost:4000/flask_hello:latest .'
           sh 'docker push localhost:4000/flask_hello:latest'
         }
       }
-      }
     }
+  }
 }
