@@ -92,25 +92,18 @@ spec:
         container('tools') {
           sh 'kubectl version --client=true'
           script {
-            // Vérifier si les fichiers existent avant de les appliquer
-            if (fileExists('./kubernetes/deployment.yaml')) {
+            try {
+              sh 'kubectl create namespace flask-app || echo "Namespace already exists"'
+              sh 'kubectl apply -f ./kubernetes/deployment.yaml -n flask-app'
+              sh 'kubectl apply -f ./kubernetes/service.yaml -n flask-app'
+              sh 'kubectl get deployments -n flask-app'
+              sh 'kubectl get services -n flask-app'
+            } catch (Exception e) {
+              echo "Trying deployment in default namespace..."
               sh 'kubectl apply -f ./kubernetes/deployment.yaml'
-            } else if (fileExists('./k8s/deployment.yaml')) {
-              sh 'kubectl apply -f ./k8s/deployment.yaml'
-            } else if (fileExists('./deployment.yaml')) {
-              sh 'kubectl apply -f ./deployment.yaml'
-            } else {
-              error 'Fichier deployment.yaml non trouvé'
-            }
-            
-            if (fileExists('./kubernetes/service.yaml')) {
               sh 'kubectl apply -f ./kubernetes/service.yaml'
-            } else if (fileExists('./k8s/service.yaml')) {
-              sh 'kubectl apply -f ./k8s/service.yaml'
-            } else if (fileExists('./service.yaml')) {
-              sh 'kubectl apply -f ./service.yaml'
-            } else {
-              error 'Fichier service.yaml non trouvé'
+              sh 'kubectl get deployments'
+              sh 'kubectl get services'
             }
           }
         }
