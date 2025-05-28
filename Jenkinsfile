@@ -23,8 +23,8 @@ spec:
       mountPath: /var/run/docker.sock
 
   - name: kubectl
-    image: bitnami/kubectl:1.30.0-debian-11-r0
-    command: ['cat']
+    image: lachlanevenson/k8s-kubectl:v1.30.0
+    command: ['sh', '-c', 'sleep infinity']
     tty: true
 
   volumes:
